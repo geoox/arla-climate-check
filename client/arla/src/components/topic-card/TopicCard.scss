@@ -1,0 +1,27 @@
+.topic-card{
+
+    img{
+        position: relative;
+    }
+
+    .segment{
+        width: 150px !important;
+        position: absolute;
+        top: 35%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        background-color: #26673b;
+        opacity: 0.95;
+        color: white;
+
+        padding: 7px !important;
+    }
+
+    .statistics{
+        justify-content: center;
+        .icon{
+            margin-right: 5px !important;
+        }
+    }
+}

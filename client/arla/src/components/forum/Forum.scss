@@ -1,0 +1,26 @@
+.forum-container{
+    background: #e1e1e1 !important;
+    min-height: 100vh;
+
+    .topics{
+        .segment{
+            width:96vw;
+            margin: auto;
+            padding: 5rem;
+
+            .header{
+                text-align: center;
+            }
+        }
+    }
+
+    .posts{
+        .segment{
+            margin-top: 1rem !important;
+            width:45.5vw;
+            margin: auto;
+            padding: 2rem;
+        }
+    }
+
+}
