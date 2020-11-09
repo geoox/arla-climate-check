@@ -2,6 +2,7 @@ import './TopicCard.scss';
 import Navbar from '../navbar/Navbar';
 import React, { Component } from 'react';
 import { Segment, Icon, Grid, Image, Statistic } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
 
 export default class TopicCard extends Component {
 
@@ -13,6 +14,7 @@ export default class TopicCard extends Component {
     render() {
         return (
             <div className="topic-card">
+                <Link to="/posts">
                 <Image src={this.props.img} />
                 <Segment compact>{this.props.text}</Segment>
                 <Statistic.Group size="mini">
@@ -25,6 +27,7 @@ export default class TopicCard extends Component {
                         <Statistic.Label>Top Rated</Statistic.Label>
                     </Statistic>
                 </Statistic.Group>
+                </Link>
             </div>
         )
     }

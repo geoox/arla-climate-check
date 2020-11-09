@@ -4,13 +4,39 @@ import TopicCard from '../topic-card/TopicCard';
 import PostHighlight from '../post-highlight/PostHighlight';
 import React, { Component } from 'react';
 import { Segment, Header, Grid, Icon, Button, Container, Statistic } from 'semantic-ui-react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 
 class Forum extends Component {
 
     constructor(props) {
         super(props);
+    }
+
+    state = {
+        post:{
+            id: 1,
+            username:"",
+            title:"",
+            date:"",
+            rating:"",
+            comments:"",
+            tags:[]
+        }
+    }
+
+    componentDidMount(){
+        this.setState({
+            post:{
+                id: 1,
+                username:"User1",
+                title:"Milk is the best",
+                date:"07.11.2020",
+                rating:"4.9",
+                comments:"12",
+                tags:["milk", "production", "status"]
+            }
+        })
     }
 
     render() {
@@ -61,26 +87,26 @@ class Forum extends Component {
                                 <Segment raised>
                                     <Header as='h2'>Newest Posts</Header>
                                     <br/>
-                                    <PostHighlight date="07.11.2020" rating="4.9" comments="12" tags={["milk", "production", "status"]}></PostHighlight>
+                                    <PostHighlight post={this.state.post}></PostHighlight>
                                     <br/>
                                     <br/>
-                                    <PostHighlight date="07.11.2020" rating="4.9" comments="12" tags={["milk", "production", "status"]}></PostHighlight>
+                                    <PostHighlight post={this.state.post}></PostHighlight>
                                     <br/>
                                     <br/>
-                                    <PostHighlight date="07.11.2020" rating="4.9" comments="12" tags={["milk", "production", "status"]}></PostHighlight>
+                                    <PostHighlight post={this.state.post}></PostHighlight>
                                 </Segment>
                             </Grid.Column>
                             <Grid.Column>
                                 <Segment raised>
                                 <Header as='h2'>Top Posts</Header>
                                     <br/>
-                                    <PostHighlight date="07.11.2020" rating="4.9" comments="12" tags={["milk", "production", "status"]}></PostHighlight>
+                                    <PostHighlight post={this.state.post}></PostHighlight>
                                     <br/>
                                     <br/>
-                                    <PostHighlight date="07.11.2020" rating="4.9" comments="12" tags={["milk", "production", "status"]}></PostHighlight>
+                                    <PostHighlight  post={this.state.post}></PostHighlight>
                                     <br/>
                                     <br/>
-                                    <PostHighlight date="07.11.2020" rating="4.9" comments="12" tags={["milk", "production", "status"]}></PostHighlight>
+                                    <PostHighlight  post={this.state.post}></PostHighlight>
                                 </Segment>
                             </Grid.Column>
                         </Grid.Row>

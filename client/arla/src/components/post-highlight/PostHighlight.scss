@@ -1,8 +1,13 @@
 .post-highlight{
     background-color: #a9b8b0;
     border-radius: 12px;
+
+    a {
+        color: inherit; /* blue colors for links too */
+        text-decoration: inherit; /* no underline */
+    }
     
-    .tag{
+    .tag-highlight{
         background-color: #004c18;
         border-radius: 10px;
         color: white;
@@ -48,7 +53,7 @@
         justify-content: center;
     }
 
-    .tags{
+    .tags-highlight{
         margin-left: 15px;
     }
 }

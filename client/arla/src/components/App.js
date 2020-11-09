@@ -5,6 +5,7 @@ import Forum from './forum/Forum';
 import Home from './home/Home';
 import CreatePost from './create-post/CreatePost';
 import Post from './post/Post';
+import Posts from './posts/Posts';
 
 function App() {
   const loggedIn = false;
@@ -13,10 +14,11 @@ function App() {
         <Route exact path="/">
           {loggedIn ? <Redirect to="/home" /> : <Redirect to="/home" />}
         </Route>
-        <Route path='/home' component={Home}></Route>
-        <Route path='/forum' component={Forum}></Route>
-        <Route path='/create-post' component={CreatePost}></Route>
-        <Route path='/post/:id' component={Post}></Route>
+        <Route exact path='/home' component={Home}></Route>
+        <Route exact path='/forum' component={Forum}></Route>
+        <Route exact path='/create-post' component={CreatePost}></Route>
+        <Route exact path='/post/:id' component={Post}></Route>
+        <Route exact path='/posts' component={Posts}></Route>
     </Switch>
   );
 }
