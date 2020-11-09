@@ -4,6 +4,7 @@ import TopicCard from '../topic-card/TopicCard';
 import PostHighlight from '../post-highlight/PostHighlight';
 import React, { Component } from 'react';
 import { Segment, Header, Grid, Icon, Button, Container, Statistic } from 'semantic-ui-react';
+import { Link, NavLink } from 'react-router-dom';
 
 
 class Forum extends Component {
@@ -16,6 +17,11 @@ class Forum extends Component {
         return (
             <div className="forum-container">
                 <Navbar location="forum"></Navbar>
+                <Link to="/create-post">
+                    <div className="create-post">
+                        <Icon name="add circle"></Icon>Create post
+                    </div>
+                </Link>
                 <div className="topics">
                     <Segment raised>
                         <Header as='h1'>Choose a Topic</Header>
