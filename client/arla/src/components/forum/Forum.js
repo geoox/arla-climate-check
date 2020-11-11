@@ -26,6 +26,7 @@ class Forum extends Component {
     }
 
     componentDidMount(){
+        //fetch data from database
         this.setState({
             post:{
                 id: 1,

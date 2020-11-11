@@ -1,5 +1,6 @@
 import { Component } from "react";
-import { Container, Header, Segment, Rating, Grid, Icon, Comment, Form, Button } from "semantic-ui-react";
+import { Link } from "react-router-dom";
+import { Container, Header, Segment, Rating, Grid, Icon, Comment, Form, TextArea } from "semantic-ui-react";
 import Navbar from "../navbar/Navbar";
 import './Post.scss';
 
@@ -60,14 +61,18 @@ export default class Post extends Component {
                 <div className="post-content">
                     <Segment raised>
                         <Header as="h1">{this.state.title}</Header>
+                        <Link to="/posts">
                         <span>Topic:</span> <div className="topic">
                             {this.state.topic}
                         </div>
+                        </Link>
                         <div className="tags"><span>Tags:</span>
                             {this.state.tags.map(el =>
+                            <Link to="/posts">
                                 <div className="tag">
                                     {el}
-                                </div>)}
+                                </div>
+                            </Link>)}
                         </div>
                         <div>Rating: {this.state.rating}</div>
                         <Rating maxRating={5} rating={this.state.rating} size="huge" disabled />
@@ -98,11 +103,17 @@ export default class Post extends Component {
                 <div className="comment-thread">
                 <Segment raised>
                     <Header as="h1">Leave a comment</Header>
-                    <Comment>
-                        <Form reply>
-                            <Form.TextArea placeholder="Describe yourself here..." />
-                            <Button content='Add Comment' labelPosition='left' icon='edit' primary />
+                    <Form className="add-comment">
+                        <TextArea placeholder="Share your thoughts..." />
+                        <div className="button-custom comment-btn">Add Comment</div>
+                        <div className="user-info">
+                            <Icon name="users" size="big"></Icon>
+                            <span>User</span>
+                        </div>
+
+                    </Form>
                             <Comment.Group>
+
                             {this.state.comments.map(comment=>
                                 <Comment>
                                     <Comment.Avatar src='https://react.semantic-ui.com/images/avatar/small/elliot.jpg'></Comment.Avatar>
@@ -118,8 +129,6 @@ export default class Post extends Component {
                                     </Comment.Content>
                                 </Comment>)}
                             </Comment.Group>
-                        </Form>
-                    </Comment>
                 </Segment>
                 </div>
             </div>

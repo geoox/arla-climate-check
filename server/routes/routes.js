@@ -6,6 +6,7 @@ const Users = require('../models/Users');
 const Comments = require('../models/Comments');
 const Posts = require('../models/Posts');
 const Tags = require('../models/Tags');
+const PostTags = require('../models/Post_Tags');
 
 router.get('/test_db', async (req, res, next) => {
     try {
@@ -82,15 +83,109 @@ router.get('/tags', async (req, res, next) => {
     }
 })
 
-router.post('/tags', async (req, res, next) => {
+router.post('/post', async (req, res, next) => {
     try {
-        const newTag = await Tags.create({
-            name: req.body.name
+
+        const topic = await Topics.findOne({
+            where: {
+                name: req.body.topic
+            }
         });
+
+        const user = await Users.findOne({
+            where: {
+                username: req.body.username
+            }
+        });
+
+        console.log('topic', topic.dataValues);
+        console.log('user', user.dataValues);
+        
+        const newPost = await Posts.create({
+            title: req.body.title,
+            text: req.body.text,
+            created_at: new Date(),
+            rating: 0,
+            topicId: topic.dataValues.id,
+            userId: user.dataValues.id,
+            views: 0
+        });
+
+        const tags = req.body.tags;
+
+        await tags.forEach(async (tag) => {
+            let tag_db = await Tags.findOne({
+                where: {
+                    name: tag
+                }
+            });
+
+            let newPostTag = await PostTags.create({
+                postId: newPost.dataValues.id,
+                tagId: tag_db.dataValues.id
+            });
+
+        });
+
         return res.status(200).json({
-            'response': newTag
+            status: 'OK',
+            newPost: newPost
         })
+
     } catch (err) {
+        return res.status(500).json({
+            'error': err
+        });
+    }
+})
+
+router.get('/posts-newest', async (res,req,next) => {
+    try{
+        const posts = await Posts.findAll({
+            limit: 3,
+            order: '"created_at" DESC'
+        });
+    
+        return res.status(200).json({
+            'response': posts
+        })
+    } catch(err) {
+        return res.status(500).json({
+            'error': err
+        });
+    }
+})
+
+router.get('/posts-top', async (req,res,next) => {
+    try{
+        const posts = await Posts.findAll({
+            limit: 3,
+            order: '"rating" DESC'
+        });
+    
+        return res.status(200).json({
+            'response': posts
+        })
+    } catch(err) {
+        return res.status(500).json({
+            'error': err
+        });
+    }
+})
+
+router.get('/posts', async (req, res, next) => {
+    try{
+        const posts = Posts.findAll({
+            where: {
+                
+            }, 
+            order: '"" '
+        })
+
+        res.status(200).json({
+            'response': posts
+        })
+    } catch(err) {
         return res.status(500).json({
             'error': err
         });
