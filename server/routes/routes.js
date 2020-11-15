@@ -137,11 +137,21 @@ router.post('/post', async (req, res, next) => {
     }
 })
 
-router.get('/posts-newest', async (res,req,next) => {
+router.get('/posts-newest', async (req,res,next) => {
     try{
+        
         const posts = await Posts.findAll({
+            include: [{
+                model: Tags,
+                as: "tags"
+            },
+            {
+                model: Topic,
+                as: "topic"
+            }
+            ],
             limit: 3,
-            order: '"created_at" DESC'
+            order: [['created_at', 'DESC']],
         });
     
         return res.status(200).json({
@@ -157,8 +167,17 @@ router.get('/posts-newest', async (res,req,next) => {
 router.get('/posts-top', async (req,res,next) => {
     try{
         const posts = await Posts.findAll({
+            include: [{
+                model: Tags,
+                as: "tags"
+            },
+            {
+                model: Topic,
+                as: "topic"
+            }
+            ],
             limit: 3,
-            order: '"rating" DESC'
+            order: [['rating', 'DESC']],
         });
     
         return res.status(200).json({
@@ -171,11 +190,32 @@ router.get('/posts-top', async (req,res,next) => {
     }
 })
 
-router.post('/tag_to_post', async (req, res, next) => {
+router.get('/post/:id', async (req, res, next) => {
+    try{
+        const post = await Posts.findByPk(req.params.id, {
+            include: [{
+                model: Tags,
+                as: "tags"
+            },
+            {
+                model: Users
+            },
+            {
+                model: Topic,
+                as: "topic"
+            }
+            ]});
+        return res.status(200).json({
+            "response": post
+        });
+    } catch(err){
+        return res.status(500).json(err);
+    } 
 
 })
 
-router.post('/filtered_posts', async (req, res, next) => {
+// fix this
+router.get('/filtered_posts', async (req, res, next) => {
     const tags = req.body.tags? {[Op.in]:req.body.tags} : {[Op.ne]: null};
     const topic = req.body.topic? req.body.topic : {[Op.ne]: null};
     let orderFinal;

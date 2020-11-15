@@ -14,6 +14,24 @@ class Forum extends Component {
     }
 
     state = {
+        newest_posts:[{
+            id: 1,
+            username:"",
+            title:"",
+            date:"",
+            rating:"",
+            comments:"",
+            tags:[]
+        }],
+        top_posts:[{
+            id: 1,
+            username:"",
+            title:"",
+            date:"",
+            rating:"",
+            comments:"",
+            tags:[]
+        }],
         post:{
             id: 1,
             username:"",
@@ -26,6 +44,9 @@ class Forum extends Component {
     }
 
     componentDidMount(){
+
+        this.fetchNewestPosts();
+        this.fetchTopPosts();
         //fetch data from database
         this.setState({
             post:{
@@ -38,6 +59,20 @@ class Forum extends Component {
                 tags:["milk", "production", "status"]
             }
         })
+    }
+
+    async fetchNewestPosts(){
+        const posts = (await (await fetch('http://localhost:5000/posts-newest')).json()).response;
+        this.setState({
+            newest_posts: posts
+        });
+    }
+
+    async fetchTopPosts(){
+        const posts = (await (await fetch('http://localhost:5000/posts-newest')).json()).response;
+        this.setState({
+            top_posts: posts
+        });
     }
 
     render() {
@@ -88,26 +123,18 @@ class Forum extends Component {
                                 <Segment raised>
                                     <Header as='h2'>Newest Posts</Header>
                                     <br/>
-                                    <PostHighlight post={this.state.post}></PostHighlight>
-                                    <br/>
-                                    <br/>
-                                    <PostHighlight post={this.state.post}></PostHighlight>
-                                    <br/>
-                                    <br/>
-                                    <PostHighlight post={this.state.post}></PostHighlight>
+                                    {
+                                        this.state.newest_posts.map(post => <PostHighlight post={post}></PostHighlight>)
+                                    }
                                 </Segment>
                             </Grid.Column>
                             <Grid.Column>
                                 <Segment raised>
                                 <Header as='h2'>Top Posts</Header>
                                     <br/>
-                                    <PostHighlight post={this.state.post}></PostHighlight>
-                                    <br/>
-                                    <br/>
-                                    <PostHighlight  post={this.state.post}></PostHighlight>
-                                    <br/>
-                                    <br/>
-                                    <PostHighlight  post={this.state.post}></PostHighlight>
+                                    {
+                                        this.state.top_posts.map(post => <PostHighlight post={post}></PostHighlight>)
+                                    }
                                 </Segment>
                             </Grid.Column>
                         </Grid.Row>

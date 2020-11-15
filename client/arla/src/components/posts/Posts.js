@@ -21,6 +21,8 @@ export default class Posts extends Component {
 
 
     componentDidMount() {
+        this.fetchTags();
+        this.fetchTopics();
         this.setState({
             topics: ["Herd Levels", "Cows", "Heifers", "Crops", "Energy", "Fertilizers"],
             tags: ["milk production", "cows", "heifers", "food efficiency", "N efficiency", "floughage share", "% homegrown DM",
@@ -64,6 +66,38 @@ export default class Posts extends Component {
         })
     }
 
+    async fetchTopics(){
+        const topics = (await (await fetch('http://localhost:5000/topics')).json()).response;
+        this.setState({
+            topics: topics
+        })
+        console.log(topics);
+
+    }
+
+    async fetchTags(){
+        const tags = (await (await fetch('http://localhost:5000/tags')).json()).response;
+        this.setState({
+            tags: tags
+        })
+        console.log(tags);
+    }
+
+    async fetchPosts(){
+        let filterObj = {};
+        filterObj.topic = this.state.activeTopic.length>0 ? this.state.activeTopic : null;
+        filterObj.tags = this.state.activeTags.length>0 ? this.state.activeTags : null;
+        const posts = (await (await fetch('http://localhost:5000/filtered_posts', {
+            "method": "post",
+            "body": JSON.stringify(filterObj)
+        })).json()).response;
+        console.log('filtered', filterObj);
+        console.log(posts);
+        // this.setState({
+        //     posts: posts
+        // });
+    }
+
     onClickTopic = event => {
         this.setState({
             activeTopic: event.target.innerText
@@ -95,6 +129,7 @@ export default class Posts extends Component {
 
     onFilterClick = event => {
         console.log('filter clicked');
+        this.fetchPosts();
     }
 
     render() {
@@ -123,8 +158,8 @@ export default class Posts extends Component {
                         <Header as="h1">Topic - Filter by selecting a topic</Header>
                         <div className="topics">
                             {this.state.topics.map(el =>
-                                <div className={this.state.activeTopic.includes(el) ? "topic topic-selected" : "topic"} onClick={this.onClickTopic}>
-                                    {el}
+                                <div className={this.state.activeTopic.includes(el.name) ? "topic topic-selected" : "topic"} onClick={this.onClickTopic}>
+                                    {el.name}
                                 </div>
                             )}
                         </div>
@@ -132,7 +167,7 @@ export default class Posts extends Component {
                         <div className="tags">
                             {this.state.tags.map(el =>
                                 <div className="tag" onClick={this.onClickTag}>
-                                    {el}
+                                    {el.name}
                                 </div>
                             )}
                         </div>

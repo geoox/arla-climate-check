@@ -11,6 +11,8 @@ export default class Post extends Component {
     }
 
     state = {
+        id: 0,
+        author: "",
         title: "",
         tags: [],
         topic: "",
@@ -18,33 +20,52 @@ export default class Post extends Component {
         rating: 0,
         newRating: 0,
         comments: [],
-        image: {}
+        image: {},
+        currentUser:"User 3"
     }
 
     componentDidMount() {
+        this.fetchPost(this.props.location.pathname.split("/")[2]);
         this.setState({
             title: "This is how I have increased productivity of milk harvest this week!",
             tags: ["productivity", "cows", "weekly"],
             topic: "Cows",
-            comments:[
+            comments: [
                 {
-                    user:"User1",
-                    date:"09.11.2020",
+                    user: "User1",
+                    date: "09.11.2020",
                     text: "Neat!"
                 },
                 {
-                    user:"User2",
-                    date:"09.11.2020",
+                    user: "User2",
+                    date: "09.11.2020",
                     text: "I want to know more!"
                 },
                 {
-                    user:"User3",
-                    date:"09.11.2020",
+                    user: "User3",
+                    date: "09.11.2020",
                     text: "I am not agreeing to your means..."
                 },
             ],
             text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam vitae nibh vitae diam auctor tristique at a metus. Donec porttitor ligula ut consectetur fermentum. Mauris luctus non nibh pellentesque molestie. Vivamus aliquam a ante in egestas.Donec lobortis erat velit, ut tristique velit facilisis vel. Duis at suscipit lorem, eu finibus nunc. Vivamus vehicula rhoncus tempor. Donec in purus eget ex eleifend vehicula vitae sed arcu. Quisque eget venenatis neque.Mauris volutpat quis tellus et bibendum. Aliquam non lectus nec turpis blandit vulputate. Pellentesque porta sapien massa, et luctus erat consectetur eu. Vestibulum in accumsan mauris. In fermentum consequat tempor. Maecenas in ultrices lacus. Curabitur mollis a orci id suscipit. Fusce dolor enim, porttitor et luctus ac, rutrum ac ante. Nunc id dui vel ligula imperdiet consequat. Vestibulum sed semper urna, eget imperdiet diam. Phasellus sed lacus ac urna pellentesque faucibus eleifend at massa. Maecenas vulputate augue a neque lobortis convallis. In gravida rutrum suscipit. Etiam vitae diam accumsan, ornare lacus quis, vehicula nibh. Cras dapibus lacus magna, id viverra tellus sodales eu.",
             rating: 4.7
+        })
+    }
+
+    async fetchPost(id) {
+        const post = (await (await fetch('http://localhost:5000/post/' + id)).json()).response;
+        console.log(post);
+        this.setState({
+            id: post.id,
+            title: post.title,
+            tags: post.tags,
+            topic: post.topic,
+            text: post.text,
+            rating: post.rating,
+            author: post.user.username,
+            newRating: 0,
+            comments: [],
+            image: {}
         })
     }
 
@@ -61,18 +82,21 @@ export default class Post extends Component {
                 <div className="post-content">
                     <Segment raised>
                         <Header as="h1">{this.state.title}</Header>
+
+                        <span>Topic:</span>
                         <Link to="/posts">
-                        <span>Topic:</span> <div className="topic">
-                            {this.state.topic}
-                        </div>
+                            <div className="topic">
+                                {this.state.topic.name}
+                            </div>
                         </Link>
+
                         <div className="tags"><span>Tags:</span>
                             {this.state.tags.map(el =>
-                            <Link to="/posts">
-                                <div className="tag">
-                                    {el}
-                                </div>
-                            </Link>)}
+                                <Link to="/posts">
+                                    <div className="tag">
+                                        {el.name}
+                                    </div>
+                                </Link>)}
                         </div>
                         <div>Rating: {this.state.rating}</div>
                         <Rating maxRating={5} rating={this.state.rating} size="huge" disabled />
@@ -87,34 +111,34 @@ export default class Post extends Component {
                             <Segment raised className="compare-content">
                                 <Header as="h2">Compare your farm with the author's farm</Header>
                                 <Icon name="users" size="big"></Icon>
-                                <span>Author username</span>
+                                <span>{this.state.author}</span>
                                 <div className="button-custom">Compare Now!</div>
                             </Segment>
                         </Grid.Column>
                         <Grid.Column>
                             <Segment raised className="rating-content">
                                 <Header as="h2">Rate this post - how useful was it for you?</Header>
-                                <Rating maxRating={5} rating={this.state.newRating} icon='star' size='massive' clearable onRate={this.onRatingChange}/>
+                                <Rating maxRating={5} rating={this.state.newRating} icon='star' size='massive' clearable onRate={this.onRatingChange} />
                                 <div className="button-custom">Submit</div>
                             </Segment>
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
                 <div className="comment-thread">
-                <Segment raised>
-                    <Header as="h1">Leave a comment</Header>
-                    <Form className="add-comment">
-                        <TextArea placeholder="Share your thoughts..." />
-                        <div className="button-custom comment-btn">Add Comment</div>
-                        <div className="user-info">
-                            <Icon name="users" size="big"></Icon>
-                            <span>User</span>
-                        </div>
+                    <Segment raised>
+                        <Header as="h1">Leave a comment</Header>
+                        <Form className="add-comment">
+                            <TextArea placeholder="Share your thoughts..." />
+                            <div className="button-custom comment-btn">Add Comment</div>
+                            <div className="user-info">
+                                <Icon name="users" size="big"></Icon>
+                                <span>{this.state.currentUser}</span>
+                            </div>
 
-                    </Form>
-                            <Comment.Group>
+                        </Form>
+                        <Comment.Group>
 
-                            {this.state.comments.map(comment=>
+                            {this.state.comments.map(comment =>
                                 <Comment>
                                     <Comment.Avatar src='https://react.semantic-ui.com/images/avatar/small/elliot.jpg'></Comment.Avatar>
                                     <Comment.Content>
@@ -128,8 +152,8 @@ export default class Post extends Component {
                                         </Comment.Actions>
                                     </Comment.Content>
                                 </Comment>)}
-                            </Comment.Group>
-                </Segment>
+                        </Comment.Group>
+                    </Segment>
                 </div>
             </div>
         )

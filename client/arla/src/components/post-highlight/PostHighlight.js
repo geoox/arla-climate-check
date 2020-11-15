@@ -28,7 +28,7 @@ export default class PostHighlight extends Component {
                                     {this.props.post.tags.map(el => 
                                     <Link to="/posts">
                                         <div className="tag-highlight">
-                                            {el}
+                                            {el.name}
                                         </div>
                                         </Link>)}
                                     </div>
@@ -46,7 +46,7 @@ export default class PostHighlight extends Component {
                                         <Statistic.Label>Rating</Statistic.Label>
                                     </Statistic>
                                     <Statistic>
-                                        <Statistic.Value><Icon name="calendar alternate"></Icon>{this.props.post.date}</Statistic.Value>
+                                        <Statistic.Value><Icon name="calendar alternate"></Icon>{this.props.post.created_at}</Statistic.Value>
                                         <Statistic.Label>Date</Statistic.Label>
                                     </Statistic>
                                 </Statistic.Group>

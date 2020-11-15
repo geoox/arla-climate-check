@@ -20,12 +20,17 @@ export default class CreatePost extends Component{
         text:""
     };
 
+    topics=[];
+    tags=[];
+
     componentDidMount(){
-        this.setState({
-            topics: ["Herd Levels", "Cows", "Heifers", "Crops", "Energy", "Fertilizers"],
-            tags: ["milk production", "cows", "heifers", "food efficiency", "N efficiency", "floughage share", "% homegrown DM",
-            "% homegrown", "Food requirements", "mortality rate", "food requirements"]
-        })
+        // this.setState({
+        //     topics: ["Herd Levels", "Cows", "Heifers", "Crops", "Energy", "Fertilizers"],
+        //     tags: ["milk production", "cows", "heifers", "food efficiency", "N efficiency", "floughage share", "% homegrown DM",
+        //     "% homegrown", "Food requirements", "mortality rate", "food requirements"]
+        // })
+        this.fetchTags();
+        this.fetchTopics();
     }
 
     onTitleChange = event =>{
@@ -78,7 +83,42 @@ export default class CreatePost extends Component{
 
     onSubmitPost = event => {
         console.log(this.state);
+        let newPost = {};
+        newPost.title = this.state.title;
+        newPost.text = this.state.text;
+        newPost.tags = this.state.activeTags;
+        newPost.topic = this.state.activeTopic;
+        newPost.username = "User 4"
+
+        console.log(newPost);
+
+        fetch("http://localhost:5000/post", {
+            method: "post",
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newPost)
+        })
     }
+
+    async fetchTopics(){
+        const topics = (await (await fetch('http://localhost:5000/topics')).json()).response;
+        this.setState({
+            topics: topics
+        })
+        console.log(topics);
+
+    }
+
+    async fetchTags(){
+        const tags = (await (await fetch('http://localhost:5000/tags')).json()).response;
+        this.setState({
+            tags: tags
+        })
+        console.log(tags);
+    }
+
 
     render(){
         return(
@@ -93,8 +133,8 @@ export default class CreatePost extends Component{
                 <Header as="h1">Topic - choose one topic</Header>
                 <div className="topics">
                     {this.state.topics.map(el => 
-                        <div className={this.state.activeTopic.includes(el)?"topic topic-selected":"topic"} onClick={this.onClickTopic}>
-                            {el}
+                        <div className={this.state.activeTopic.includes(el.name)?"topic topic-selected":"topic"} onClick={this.onClickTopic}>
+                            {el.name}
                         </div>
                     )}
                 </div>
@@ -102,7 +142,7 @@ export default class CreatePost extends Component{
                 <div className="tags">
                     {this.state.tags.map(el => 
                         <div className="tag" onClick={this.onClickTag}>
-                            {el}
+                            {el.name}
                         </div>
                     )}
                 </div>
