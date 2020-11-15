@@ -6,7 +6,8 @@ const Users = require('../models/Users');
 const Comments = require('../models/Comments');
 const Posts = require('../models/Posts');
 const Tags = require('../models/Tags');
-const PostTags = require('../models/Post_Tags');
+const Topic = require('../models/Topics');
+const Op = require('sequelize').Op;
 
 router.get('/test_db', async (req, res, next) => {
     try {
@@ -51,7 +52,7 @@ router.get('/users', async (req, res, next) => {
     } 
 })
 
-router.post('/users', async (req, res, next) => {
+router.post('/user', async (req, res, next) => {
     try{
         const newUser = await Users.create({
             username: req.body.username,
@@ -120,10 +121,7 @@ router.post('/post', async (req, res, next) => {
                 }
             });
 
-            let newPostTag = await PostTags.create({
-                postId: newPost.dataValues.id,
-                tagId: tag_db.dataValues.id
-            });
+            newPost.addTag(tag_db.dataValues.id);
 
         });
 
@@ -173,14 +171,44 @@ router.get('/posts-top', async (req,res,next) => {
     }
 })
 
-router.get('/posts', async (req, res, next) => {
+router.post('/tag_to_post', async (req, res, next) => {
+
+})
+
+router.post('/filtered_posts', async (req, res, next) => {
+    const tags = req.body.tags? {[Op.in]:req.body.tags} : {[Op.ne]: null};
+    const topic = req.body.topic? req.body.topic : {[Op.ne]: null};
+    let orderFinal;
+    if(req.body.order){
+        let order='';
+        if(req.body.order.by == 'date') order+='"created_at" ';
+        if(req.body.order.by == 'rating') order+='"rating" ';
+        if(req.body.order.by == 'comments') order+= '"comments" ';
+
+        if(req.body.order.order == 'asc') order+='ASC';
+        if(req.body.order.order == 'desc') order+='DESC';
+        orderFinal = order;
+    } 
     try{
-        const posts = Posts.findAll({
+        console.log(orderFinal)
+        const posts = await Posts.findAll({
+            include: [{
+                model: Tags,
+                as: "tags"
+            },
+            {
+                model: Topic,
+                as: "topic"
+            },
+            ],
             where: {
-                
-            }, 
-            order: '"" '
-        })
+                '$tags.name$': tags,
+                '$topic.name$':topic
+            }
+            
+        });
+
+        console.log('posts', posts);
 
         res.status(200).json({
             'response': posts

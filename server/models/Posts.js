@@ -3,6 +3,7 @@ const Sequelize = require('sequelize');
 const db = require('./../config/database');
 const Topic = require('./Topics');
 const User = require('./Users');
+const Tag = require('./Tags');
 
 const Post = db.define('post', {
     title:{
@@ -16,13 +17,21 @@ const Post = db.define('post', {
     },
     rating:{
         type: REAL
-    },
-    views:{
-        type: INTEGER
     }
 })
 
 Post.belongsTo(Topic);
 Post.belongsTo(User);
+
+Post.belongsToMany(Tag, {
+    through: "post_tag",
+    as: "tags",
+    foreignKey: "post_id",
+});
+Tag.belongsToMany(Post, {
+    through: "post_tag",
+    as: "posts",
+    foreignKey: "tag_id",
+});
 
 module.exports = Post;
