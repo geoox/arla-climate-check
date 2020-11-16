@@ -6,6 +6,12 @@ import React, { Component } from 'react';
 import { Segment, Header, Grid, Icon, Button, Container, Statistic } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 
+import herdLevelsImg from '../../assets/chart.jpg';
+import cowsImg from '../../assets/topic2.jpg'
+import heifersImg from '../../assets/topic5.jpg';
+import cropsImg from '../../assets/topic1.jpg'
+import energyImg from '../../assets/topic4.jpg';
+import fertilizerImg from '../../assets/topic3.jpg'
 
 class Forum extends Component {
 
@@ -69,7 +75,7 @@ class Forum extends Component {
     }
 
     async fetchTopPosts(){
-        const posts = (await (await fetch('http://localhost:5000/posts-newest')).json()).response;
+        const posts = (await (await fetch('http://localhost:5000/posts-top')).json()).response;
         this.setState({
             top_posts: posts
         });
@@ -92,25 +98,25 @@ class Forum extends Component {
                         <Grid>
                             <Grid.Row columns={3}>
                                 <Grid.Column>
-                                    <TopicCard posts="22" top="4.7" img="https://react.semantic-ui.com/images/wireframe/paragraph.png" text="Herd Levels"></TopicCard>
+                                    <TopicCard posts="22" top="4.7" img={herdLevelsImg} text="Herd Levels"></TopicCard>
                                 </Grid.Column>
                                 <Grid.Column>
-                                    <TopicCard posts="22" top="4.7" img="https://react.semantic-ui.com/images/wireframe/paragraph.png" text="Cows"></TopicCard>
+                                    <TopicCard posts="22" top="4.7" img={cowsImg} text="Cows"></TopicCard>
                                 </Grid.Column>
                                 <Grid.Column>
-                                    <TopicCard posts="22" top="4.7" img="https://react.semantic-ui.com/images/wireframe/paragraph.png" text="Heifers"></TopicCard>
+                                    <TopicCard posts="22" top="4.7" img={heifersImg} text="Heifers"></TopicCard>
                                 </Grid.Column>
                             </Grid.Row>
 
                             <Grid.Row columns={3}>
                                 <Grid.Column>
-                                    <TopicCard posts="22" top="4.7" img="https://react.semantic-ui.com/images/wireframe/paragraph.png" text="Crops"></TopicCard>
+                                    <TopicCard posts="22" top="4.7" img={cropsImg} text="Crops"></TopicCard>
                                 </Grid.Column>
                                 <Grid.Column>
-                                    <TopicCard posts="22" top="4.7" img="https://react.semantic-ui.com/images/wireframe/paragraph.png" text="Energy"></TopicCard>
+                                    <TopicCard posts="22" top="4.7" img={energyImg} text="Energy"></TopicCard>
                                 </Grid.Column>
                                 <Grid.Column>
-                                    <TopicCard posts="22" top="4.7" img="https://react.semantic-ui.com/images/wireframe/paragraph.png" text="Fertilizer"></TopicCard>
+                                    <TopicCard posts="22" top="4.7" img={fertilizerImg} text="Fertilizer"></TopicCard>
                                 </Grid.Column>
                             </Grid.Row>
                         </Grid>

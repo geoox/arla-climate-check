@@ -7,6 +7,8 @@ const Comments = require('../models/Comments');
 const Posts = require('../models/Posts');
 const Tags = require('../models/Tags');
 const Topic = require('../models/Topics');
+const Post = require('../models/Posts');
+const Comment = require('../models/Comments');
 const Op = require('sequelize').Op;
 
 router.get('/test_db', async (req, res, next) => {
@@ -44,6 +46,19 @@ router.get('/users', async (req, res, next) => {
         });
         return res.status(200).json({
             'response': users
+        });
+    } catch (err) {
+        return res.status(500).json({
+            'error': err
+        });
+    } 
+})
+
+router.get('/user/:id', async (req, res, next) => {
+    try{
+        const user = await Users.findByPk(req.params.id)
+        return res.status(200).json({
+            'response': user
         });
     } catch (err) {
         return res.status(500).json({
@@ -192,7 +207,18 @@ router.get('/posts-top', async (req,res,next) => {
 
 router.get('/post/:id', async (req, res, next) => {
     try{
-        const post = await Posts.findByPk(req.params.id, {
+        const post = await Posts.findByPk(req.params.id, { include: [{ all: true, nested: true }]});
+        return res.status(200).json({
+            "response": post
+        });
+    } catch(err){
+        return res.status(500).json(err);
+    } 
+})
+
+router.get('/posts',  async (req, res, next) => {
+    try{
+        const posts = await Posts.findAll({
             include: [{
                 model: Tags,
                 as: "tags"
@@ -204,33 +230,25 @@ router.get('/post/:id', async (req, res, next) => {
                 model: Topic,
                 as: "topic"
             }
-            ]});
+            ],
+            order: [['created_at','DESC']]});
         return res.status(200).json({
-            "response": post
+            "response": posts
         });
     } catch(err){
         return res.status(500).json(err);
     } 
-
 })
 
-// fix this
 router.get('/filtered_posts', async (req, res, next) => {
-    const tags = req.body.tags? {[Op.in]:req.body.tags} : {[Op.ne]: null};
-    const topic = req.body.topic? req.body.topic : {[Op.ne]: null};
-    let orderFinal;
-    if(req.body.order){
-        let order='';
-        if(req.body.order.by == 'date') order+='"created_at" ';
-        if(req.body.order.by == 'rating') order+='"rating" ';
-        if(req.body.order.by == 'comments') order+= '"comments" ';
+    console.log('query tag', req.query.tag);
 
-        if(req.body.order.order == 'asc') order+='ASC';
-        if(req.body.order.order == 'desc') order+='DESC';
-        orderFinal = order;
-    } 
+    const tags = req.query.tag? {[Op.in]:req.query.tag} : {[Op.ne]: null};
+    const topic = req.query.topic? req.query.topic : {[Op.ne]: null};
+    const sort = req.query.sort? [[req.query.sort.split(" ")[0], req.query.sort.split(" ")[1]]] : [['created_at', 'DESC']];
+    const title = req.query.title.length>0 ? req.query.title:'';
+    console.log('sort', sort);
     try{
-        console.log(orderFinal)
         const posts = await Posts.findAll({
             include: [{
                 model: Tags,
@@ -243,12 +261,14 @@ router.get('/filtered_posts', async (req, res, next) => {
             ],
             where: {
                 '$tags.name$': tags,
-                '$topic.name$':topic
-            }
+                '$topic.name$':topic,
+                'title': {
+                    [Op.iLike]: `%${title}%`
+                }
+            },
+            order: sort
             
         });
-
-        console.log('posts', posts);
 
         res.status(200).json({
             'response': posts
@@ -257,6 +277,49 @@ router.get('/filtered_posts', async (req, res, next) => {
         return res.status(500).json({
             'error': err
         });
+    }
+})
+
+router.put('/post/:id/rating', async (req, res, next) => {
+    try{
+        const updatedPost = await Posts.update(
+            {rating: req.body.rating},
+            {where: {id: req.params.id}}
+        );
+
+        console.log('updatedPost', updatedPost)
+
+        return res.status(200).json({
+            response: updatedPost
+        });
+    } catch(err) {
+        return res.status(500).json({
+            'error': err
+        });
+    }
+})
+
+// router.get('/comments/:id', async (req, res, next) => {
+//     try{
+//         const comments = await Comments.findAll
+//     }
+// })
+
+router.post('/comment/', async (req, res, next) => {
+    try{
+        const newComment = await Comments.create({
+            created_at: new Date(),
+            postId: req.body.postId,
+            userId: req.body.userId,
+            text: req.body.text,
+            username: req.body.username
+        });
+
+        res.status(200).json({
+            "response": newComment
+        })
+    } catch(err){
+        res.status(500).json(err);
     }
 })
 

@@ -4,6 +4,7 @@ const db = require('./../config/database');
 const Topic = require('./Topics');
 const User = require('./Users');
 const Tag = require('./Tags');
+const Comment = require('./Comments');
 
 const Post = db.define('post', {
     title:{
@@ -33,5 +34,10 @@ Tag.belongsToMany(Post, {
     as: "posts",
     foreignKey: "tag_id",
 });
+
+Post.hasMany(Comment);
+Comment.belongsTo(Post);
+
+
 
 module.exports = Post;

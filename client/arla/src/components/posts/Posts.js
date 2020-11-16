@@ -17,12 +17,16 @@ export default class Posts extends Component {
         activeTopic:"",
         activeTags:[],
         posts:[],
+        currentSort:''
     };
+
+    timer = null;
 
 
     componentDidMount() {
         this.fetchTags();
         this.fetchTopics();
+        this.fetchAllPosts();
         this.setState({
             topics: ["Herd Levels", "Cows", "Heifers", "Crops", "Energy", "Fertilizers"],
             tags: ["milk production", "cows", "heifers", "food efficiency", "N efficiency", "floughage share", "% homegrown DM",
@@ -83,19 +87,34 @@ export default class Posts extends Component {
         console.log(tags);
     }
 
-    async fetchPosts(){
+    async fetchFilteredPosts(){
         let filterObj = {};
         filterObj.topic = this.state.activeTopic.length>0 ? this.state.activeTopic : null;
         filterObj.tags = this.state.activeTags.length>0 ? this.state.activeTags : null;
-        const posts = (await (await fetch('http://localhost:5000/filtered_posts', {
-            "method": "post",
-            "body": JSON.stringify(filterObj)
-        })).json()).response;
+        filterObj.sort = this.state.currentSort.length>0 ? this.state.currentSort : null;
+        let url = 'http://localhost:5000/filtered_posts?';
+        if(this.state.activeTags){
+            this.state.activeTags.forEach(tag => {
+                url = url + 'tag=' + tag + '&';
+            })
+        }
+        url = url + 'topic=' + this.state.activeTopic;
+        if(this.state.currentSort.length>0) url = url + '&sort=' + this.state.currentSort;
+        console.log(url);
+        const posts = (await (await fetch(url)).json()).response;
         console.log('filtered', filterObj);
         console.log(posts);
-        // this.setState({
-        //     posts: posts
-        // });
+        this.setState({
+            posts: posts
+        });
+    }
+
+    async fetchAllPosts(){
+        const posts = (await (await fetch('http://localhost:5000/posts')).json()).response;
+        console.log('allposts', posts);
+        this.setState({
+            posts: posts
+        })
     }
 
     onClickTopic = event => {
@@ -127,19 +146,34 @@ export default class Posts extends Component {
         console.log(this.state);
     }
 
+    onSortChosen = (e, { value }) => {
+        this.setState({ currentSort: value }, () => console.log(this.state))
+    }
+
     onFilterClick = event => {
         console.log('filter clicked');
-        this.fetchPosts();
+        this.fetchFilteredPosts();
+    }
+
+    onSearch = async event => {
+        clearTimeout(this.timer);
+        this.timer = setTimeout( async () => {
+            const posts = (await (await fetch('http://localhost:5000/filtered_posts?title='+event.target.value)).json()).response;
+            this.setState({
+                posts: posts
+            })
+        }, 1500);
+
     }
 
     render() {
         const dropdownOptions = [
-            { key: 1, text: 'Newest (date)', value: "date_desc" },
-            { key: 2, text: 'Oldest (date)', value: "date_asc" },
-            { key: 3, text: 'Most comments', value: "comments_desc" },
-            { key: 4, text: 'Least comments', value: "comments_asc" },
-            { key: 5, text: 'Best rating', value: "rating_desc" },
-            { key: 6, text: 'Worst rating', value: "rating_asc" },
+            { key: 1, text: 'Date - Descending', value: 'created_at DESC' },
+            { key: 2, text: 'Date - Ascending', value: 'created_at ASC' },
+            // { key: 3, text: 'Comments - Descending', value: "comments_desc" },
+            // { key: 4, text: 'Comments - Ascending', value: "comments_asc" },
+            { key: 3, text: 'Rating - Descending', value: 'rating DESC' },
+            { key: 4, text: 'Rating - Ascending', value: 'rating ASC' },
           ]
         return (
             <div className="posts-container">
@@ -150,7 +184,7 @@ export default class Posts extends Component {
                             <Icon name="add circle"></Icon>Create post
                         </div>
                     </Link>
-                    <Search
+                    <Search onKeyUp={this.onSearch}
                     />
                     <br/>
                     <div className="filter-container">
@@ -172,7 +206,7 @@ export default class Posts extends Component {
                             )}
                         </div>
                         <br/>
-                        <span>Sort by: </span><Dropdown clearable options={dropdownOptions} selection placeholder="Choose..." className="sort-dropdown"/>
+                        <span>Sort by: </span><Dropdown clearable options={dropdownOptions} value={this.state.currentSort} selection placeholder="Choose..." className="sort-dropdown" onChange={this.onSortChosen}/>
                         <br/>
                         <div className="filter-btn" onClick={this.onFilterClick}>
                             <Icon name="filter"></Icon>Filter
@@ -185,12 +219,13 @@ export default class Posts extends Component {
                 <div className="posts-container">
                     <Segment raised className="posts-content">
                                 
-                                {this.state.posts.map(post => 
+                                {this.state.posts? this.state.posts.map(post => 
                                 <div>
                                     <PostHighlight post={post}></PostHighlight>
                                     <br/><br/>
                                 </div>   
-                                )}
+                                )
+                                : <div></div>}
                     </Segment>
                 </div>
             </div>

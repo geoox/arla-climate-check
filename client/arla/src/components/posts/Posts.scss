@@ -74,6 +74,10 @@
         text-align: center;
     }
 
+    .ui.search>.results{
+        display: none !important;
+    }
+
     .topic:hover, .tag:hover, .create-post:hover, .filter-btn:hover{
         cursor: pointer;
     }

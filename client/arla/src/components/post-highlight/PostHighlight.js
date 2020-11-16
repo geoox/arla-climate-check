@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import { Segment, Icon, Container, Button, Statistic, Header, Grid } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 
+import moment from 'moment';
+
 export default class PostHighlight extends Component {
 
     constructor(props) {
@@ -25,7 +27,7 @@ export default class PostHighlight extends Component {
                                     <Link to={`/post/${this.props.post.id}`}><p><b>{this.props.post.title}</b></p></Link>
                                     {/* <p>Topic: Milk</p> */}
                                     <div className="tags-highlight">
-                                    {this.props.post.tags.map(el => 
+                                    {this.props.post.tags.slice(0, 3).map(el => 
                                     <Link to="/posts">
                                         <div className="tag-highlight">
                                             {el.name}
@@ -46,7 +48,7 @@ export default class PostHighlight extends Component {
                                         <Statistic.Label>Rating</Statistic.Label>
                                     </Statistic>
                                     <Statistic>
-                                        <Statistic.Value><Icon name="calendar alternate"></Icon>{this.props.post.created_at}</Statistic.Value>
+                                        <Statistic.Value><Icon name="calendar alternate"></Icon>{moment(this.props.post.created_at).format('DD/MM/YYYY')}</Statistic.Value>
                                         <Statistic.Label>Date</Statistic.Label>
                                     </Statistic>
                                 </Statistic.Group>
